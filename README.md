@@ -4,46 +4,16 @@
 [![](https://img.shields.io/twitter/follow/alexanderameye.svg?label=Follow&style=social)](https://twitter.com/intent/follow?screen_name=alexanderameye)
 
 # Free Prefab Painter
-A free, basic prefab-painter for Unity3D.
+A free, basic prefab-painter for Unity.
 
-![UI](https://i.imgur.com/T3jS9Cp.png)
+![Record_2021_10_02_10_40_14_887](https://user-images.githubusercontent.com/16706911/135707548-43bd5a32-6754-4434-bea6-8c02a6e8507e.gif)
+
+
 
 # Installation
 After you've downloaded the files, you have 3 options to 'install' this tool.
 
 * Download this repository and put the downloaded files in your Assets/ folder.
-* Download this repository somewhere in your files. Then in Unity locate the package.json file through the package manager UI.
-
-![UPM](https://i.imgur.com/HiaOKBa.png)
-
-* Reference this git repository in your project manifest file under dependencies. This will add the package to you project.
-
-  ```json
-  "me.ameye.prefab-painter": "https://github.com/alexanderameye/prefab-painter.git"
-  ```
-
-# Features
-- Paint on every type of surface (plane, terrain, sphere,...)
-- Paint multiple types of prefabs at once
-- Paint with random prefab rotations
-- Paint with random prefab sizes
-- Prefab previewer
-- Customizable brush size, density
-- Paint on selected layers
-- Palettes/presets functionality with useful toolbar
-- Dynamic prefab list
-
-## Painting
-
-> ctrl + left mouse button to paint
-
-> ctrl + scroll to change the brush size
-
-> alt + scroll to change the brush density
-
-Make sure that the layer settings in the prefab painter are set up correctly!
-
-Important! The prefabs need colliders in order for the tool to work.
 
 ## Palettes
 Palettes are 'painting presets'. You can for example create a 'Trees' that contains 3 different types of trees.
@@ -57,45 +27,3 @@ This tool has been tested with Unity 2018.3.0f2.
 
 # Unity forum thread
 https://forum.unity.com/threads/released-free-prefab-painter-github.506118/
-
-# Roadmap
-These are the planned features in no particular order. Not all features marked 'done' are on GitHub already.
-
-> :heavy_check_mark: Improved palette system with new toolbar
-
-> :heavy_check_mark: Undo/redo support
-
-> :heavy_check_mark: Package manager support
-
-> :heavy_check_mark: Better prefab list UI with drag-and-drop functionality
-
-> :heavy_check_mark: Palette save location menu and renaming functionality
-
-> :x: Prefab list multi-select and delete functionality
-
-> :x: Painting code cleanup
-
-> :x: Slope and altitude painting rules
-
-> :x: New painting handle look
-
-> :x: Probability settings per prefab
-
-> :x: Erase brush
-
-> :x: Grid brush
-
-> :x: Runtime prefab placing
-
-> :x: Paint aligned to painting stroke
-
-
-# Known Issues
-These are some known issues and inconveniences I'd like to fix.
-
-> :beetle: Sometimes when you edit the settings of a prefab, the settings don't get registered without pressing enter
-
-> :beetle: Some prefabs don't get placed
-
-> :beetle: Undo error when undo object is null
-
