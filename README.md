@@ -15,8 +15,7 @@ After you've downloaded the files, you have 3 options to 'install' this tool.
 
 * Download this repository and put the downloaded files in your Assets/ folder.
 
-![Record_2021_10_02_11_16_45_836](https://user-images.githubusercontent.com/16706911/135708382-7f5ac843-1e73-4b33-a28f-529f5cae7a57.gif)
-
+![Record_2021_10_02_11_29_27_475](https://user-images.githubusercontent.com/16706911/135708580-b549c825-3246-444e-8519-0bf363298ae1.gif)
 
 ## Palettes
 Palettes are 'painting presets'. You can for example create a 'Trees' that contains 3 different types of trees.
