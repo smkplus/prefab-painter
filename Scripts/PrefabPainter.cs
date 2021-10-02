@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using UnityEditor.Tilemaps;
 
 namespace PrefabPainter
 {
@@ -14,6 +15,7 @@ namespace PrefabPainter
 
         // Palettes
         private Texture2D deleteIcon;
+        private Texture2D deletePaletteIcon;
         private Texture2D saveIcon;
         [SerializeField]
         PaintPalette activePalette;
@@ -77,6 +79,7 @@ namespace PrefabPainter
             for (int i = 0; i <= 10; i++) layerNames.Add(LayerMask.LayerToName(i));
 
             deleteIcon = EditorGUIUtility.Load("icons/d_TreeEditor.Trash.png") as Texture2D;
+            deletePaletteIcon = EditorGUIUtility.FindTexture("winbtn_mac_close_h");
             saveIcon = EditorGUIUtility.Load("icons/SaveActive.png") as Texture2D;
 
             blueTexture = new Texture2D(64, 64);
@@ -112,9 +115,6 @@ namespace PrefabPainter
             windowBounds.height = Screen.height;
 
             currentEvent = Event.current;
-            UpdateMousePos(sceneView);
-            DrawBrushGizmo();
-            SceneInput();
             if (Event.current.type == EventType.MouseMove || Event.current.type == EventType.MouseDrag)
                 SceneView.RepaintAll();
         }
@@ -123,39 +123,6 @@ namespace PrefabPainter
         {
             get { return EditorPrefs.GetBool("BrushSettingsFold", false); }
             set { EditorPrefs.SetBool("BrushSettingsFold", value); }
-        }
-
-        static GUIStyle _foldoutStyle;
-
-        static GUIStyle FoldoutStyle
-        {
-            get
-            {
-                if (_foldoutStyle == null)
-                {
-                    _foldoutStyle = new GUIStyle(EditorStyles.foldout)
-                    {
-                        font = EditorStyles.boldFont
-                    };
-                }
-
-                return _foldoutStyle;
-            }
-        }
-
-        static GUIStyle _boxStyle;
-
-        public static GUIStyle BoxStyle
-        {
-            get
-            {
-                if (_boxStyle == null)
-                {
-                    _boxStyle = new GUIStyle(EditorStyles.helpBox);
-                }
-
-                return _boxStyle;
-            }
         }
 
         void OnGUI()
@@ -209,7 +176,20 @@ namespace PrefabPainter
                 }
                 else CreateNewPalette();
             }
-            if (GUILayout.Button(new GUIContent("", deleteIcon, "Remove currently loaded palette."), "ToolbarButton")) Debug.Log("Remove Palette");
+            if (GUILayout.Button(new GUIContent("", deleteIcon, "Remove currently Object."), "ToolbarButton"))
+            {
+                Remove();
+                Debug.Log("Remove Item");
+            }
+            
+            
+            if (GUILayout.Button(new GUIContent("", deletePaletteIcon, "Remove currently Palette."), "ToolbarButton"))
+            {
+                palettes.Remove(activePalette);
+                OnNewPaletteSelected();
+                Debug.Log("Remove Palette");
+            }
+
             if (GUILayout.Button(new GUIContent("Palettes", "Load in a palette."), "ToolbarPopup"))
             {
                 GenericMenu menu = new GenericMenu();
@@ -226,41 +206,20 @@ namespace PrefabPainter
             }
 
             EditorGUILayout.EndHorizontal();
-
-            EditorGUILayout.Space();
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, false, false);
-
-            float tempSize = brushSize;
-            int tempDensity = brushDensity;
-
-            BrushSettingsFold = BeginFold("Brush Settings", BrushSettingsFold);
-            if (BrushSettingsFold)
-            {
-                paintMask = EditorGUILayout.MaskField(
-                    new GUIContent("Paint Layer", "On which layer the tool will paint."), paintMask,
-                    layerNames.ToArray());
-                brushSize = EditorGUILayout.FloatField("Brush Size", brushSize);
-                brushDensity = EditorGUILayout.IntField("Brush Density", brushDensity);
-                paintGroupName = EditorGUILayout.TextField("Paint Group Name", paintGroupName);
-            }
-            EndFold();
-
-            listSize = Mathf.Max(0, listSize);
-
             DisplayPrefabs(paintObjects);
-            if (Event.current.type == EventType.Layout && selectedPrefab != null) displayPrefabSettings = true;
 
-            if (displayPrefabSettings) selectedPrefab.displaySettings();
-
-            EditorGUILayout.Space();
-            GUILayout.Space(75f + prefabListHeight);
-            CheckForChanges(tempSize, tempDensity);
-            EditorGUILayout.EndScrollView();
         }
 
         void OverridePalette(PaintPalette palette)
         {
             palette.palette = paintObjects;
+        }
+
+        public void Remove()
+        {
+            activePalette.palette.Remove(selectedPrefab);
+            Repaint();
+            DisplayPrefabs(paintObjects);
         }
 
         void LoadPalette(PaintPalette palette)
@@ -616,36 +575,20 @@ namespace PrefabPainter
             Repaint();
         }
 
-        public static bool BeginFold(string foldName, bool foldState)
-        {
-            EditorGUILayout.BeginVertical(BoxStyle);
-            GUILayout.Space(3);
-            foldState = EditorGUI.Foldout(EditorGUILayout.GetControlRect(),
-                foldState, foldName, true, FoldoutStyle);
-            if (foldState) GUILayout.Space(3);
-            return foldState;
-        }
-
-        public static void EndFold()
-        {
-            GUILayout.Space(3);
-            EditorGUILayout.EndVertical();
-            GUILayout.Space(0);
-        }
-
         public void DisplayPrefabs(List<PaintObject> prefabs)
         {
             int numberOfPrefabs = prefabs.Count;
             int windowWidth = (int)EditorGUIUtility.currentViewWidth;
 
             int y;
-            if (selectedPrefab != null) y = 215;
-            else y = 110;
+            if (selectedPrefab != null) y = 5;
+            else y = 5;
 
             for (int i = 0; i < numberOfPrefabs; i++)
             {
                 var e = Event.current;
                 GameObject go = prefabs[i].GetGameObject();
+                
 
                 int columns = Mathf.FloorToInt(windowWidth / (50 + 20) + 1);
                 int rows = Mathf.FloorToInt(numberOfPrefabs / columns);
@@ -659,6 +602,7 @@ namespace PrefabPainter
                 if (r.Contains(Event.current.mousePosition) && e.type == EventType.MouseDown && e.button == 0)
                 {
                     selectedPrefab = prefabs[i];
+                    GridPaintingState.gridBrush = selectedPrefab.go;
                     Repaint();
                 }
 
@@ -687,6 +631,9 @@ namespace PrefabPainter
 
             DropAreaGUI(new Rect(xRect + 2, yRect + 6, 46, 46));
         }
+        
+        Object currentObject = null;
+        Object selectedObject = null;
 
         public void DropAreaGUI(Rect r)
         {
@@ -695,8 +642,31 @@ namespace PrefabPainter
             GUI.Box(dropArea, string.Empty);
             GUI.Label(dropArea, "+", EditorStyles.centeredGreyMiniLabel);
 
+            // if (GUI.Button(dropArea, "+"))
+            // {
+            //     int controlID = EditorGUIUtility.GetControlID (FocusType.Passive);
+            //     EditorGUIUtility.ShowObjectPicker<Camera> (null, true, "", controlID);
+            //
+            //     //CameraのコンポーネントをタッチしているGameObjectを選択する
+            //     string commandName = Event.current.commandName;
+            //
+            //     if (commandName == "ObjectSelectorUpdated") {
+            //         currentObject = EditorGUIUtility.GetObjectPickerObject ();
+            //         Debug.Log(currentObject.name);
+            //
+            //         //ObjectPickerを開いている間はEditorWindowの再描画が行われないのでRepaintを呼びだす
+            //         Repaint ();
+            //     } else if (commandName == "ObjectSelectorClosed") {
+            //         selectedObject = EditorGUIUtility.GetObjectPickerObject ();
+            //         Debug.Log(selectedObject.name);
+            //
+            //     }
+
+            // }
+            
             switch (e.type)
             {
+
                 case EventType.DragUpdated:
                 case EventType.DragPerform:
                     if (!dropArea.Contains(e.mousePosition))
@@ -710,9 +680,9 @@ namespace PrefabPainter
 
                         foreach (Object dragged_object in DragAndDrop.objectReferences)
                         {
-                            if (dragged_object is GameObject)
+                            if (dragged_object is PrefabBrush)
                             {
-                                GameObject go = (GameObject)dragged_object;
+                                PrefabBrush go = (PrefabBrush)dragged_object;
                                 PaintObject po = new PaintObject(go);
                                 po.setName(dragged_object.name);
                                 paintObjects.Add(po);
