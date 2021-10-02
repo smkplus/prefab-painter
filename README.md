@@ -15,6 +15,9 @@ After you've downloaded the files, you have 3 options to 'install' this tool.
 
 * Download this repository and put the downloaded files in your Assets/ folder.
 
+![Record_2021_10_02_11_16_45_836](https://user-images.githubusercontent.com/16706911/135708382-7f5ac843-1e73-4b33-a28f-529f5cae7a57.gif)
+
+
 ## Palettes
 Palettes are 'painting presets'. You can for example create a 'Trees' that contains 3 different types of trees.
 You can manage your palettes using the palette toolbar. You can use the 'Load' button to load a custom palette from your project folder, or you can create a new palette by clicking 'palettes > New Palette'. After you've edited a palette, don't forget to save it.
